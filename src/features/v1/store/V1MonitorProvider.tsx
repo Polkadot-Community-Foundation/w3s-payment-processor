@@ -1,0 +1,48 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+
+import { useProcessorConfig } from "@/shared/store/useProcessorConfig.tsx";
+import { startV1Monitor, type V1MonitorHandle } from "@/features/v1/api/engine.ts";
+import { useV1Store } from "@/features/v1/store/useV1Store.ts";
+
+const V1HandleContext = createContext<V1MonitorHandle | null>(null);
+
+/** Starts the v1 engine while v1 is enabled and exposes its handle. */
+export function V1MonitorProvider({ children }: { children: ReactNode }) {
+  const config = useProcessorConfig();
+  const [handle, setHandle] = useState<V1MonitorHandle | null>(null);
+
+  useEffect(() => {
+    if (!config.v1.enabled || !config.v1.mode) {
+      setHandle(null);
+      return;
+    }
+    // One controller per run. Cleanup aborts it, which stops the in-flight
+    // backfill and silences its store writes — so a StrictMode remount or a
+    // settings toggle never leaves two monitors racing the same catchup state.
+    const controller = new AbortController();
+    let live: V1MonitorHandle | null = null;
+    void startV1Monitor(config.v1.mode, controller.signal).then((resolved) => {
+      live = resolved;
+      if (controller.signal.aborted) resolved.stop();
+      else setHandle(resolved);
+    });
+    return () => {
+      controller.abort();
+      setHandle(null);
+      live?.stop();
+    };
+  }, [config]);
+
+  return <V1HandleContext.Provider value={handle}>{children}</V1HandleContext.Provider>;
+}
+
+/** v1 live state + UI actions. Actions are no-ops until the engine has started. */
+export function useV1Monitor() {
+  const state = useV1Store();
+  const handle = useContext(V1HandleContext);
+  return {
+    ...state,
+    commitZReport: handle?.commitZReport ?? (async () => {}),
+    toggleReconcile: handle?.toggleReconcile ?? (async () => {}),
+  };
+}
