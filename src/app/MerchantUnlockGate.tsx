@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { useCallback, useEffect, useState, type CSSProperties, type FormEvent } from "react";
 
 import { DisplayIf } from "@/shared/components/DisplayIf.tsx";
@@ -14,14 +17,6 @@ import type { ResolvedProcessorConfig } from "@/config.ts";
  * proceeds to Polkadot-host sign-in. On failure the processor stays locked and
  * shows a calm message with optional technical detail behind an expander.
  *
- * Credential persistence:
- *  - Saved via the browser's `PasswordCredential` API (integrated with OS/browser
- *    password manager) and silently pre-filled on next load via `mediation: "optional"`.
- *  - The groupId is also kept in localStorage as a lighter-weight autofill hint
- *    when PasswordCredential isn't available (some webviews).
- *  - The passkey is NEVER written to localStorage — only to the browser credential
- *    store, which has OS-level protection. It is cleared from component state
- *    immediately after a successful unlock.
  */
 type UnlockStatus = "idle" | "unlocking" | "error";
 
@@ -53,7 +48,6 @@ function saveCreds(groupId: string, passkey: string): void {
   }
 }
 
-/** Save both fields to the browser's credential manager (silently, best-effort). */
 async function saveBrowserCredential(groupId: string, passkey: string): Promise<void> {
   if (typeof window === "undefined" || !("PasswordCredential" in window)) return;
   try {
@@ -65,7 +59,6 @@ async function saveBrowserCredential(groupId: string, passkey: string): Promise<
   }
 }
 
-/** Try to pre-fill from the browser credential store (silent; only fires when one match exists). */
 async function loadBrowserCredential(): Promise<{ id: string; password: string } | null> {
   if (typeof window === "undefined" || !("PasswordCredential" in window)) return null;
   try {

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import * as Sentry from "@sentry/react";
 
 /**
@@ -12,13 +15,21 @@ import * as Sentry from "@sentry/react";
 export function initTelemetry(opts: {
   dsn: string;
   environment: string;
-  tracesSampleRate: number;
+  /** Traces sample rate (0..1). Default 0.0 — opt-in per call site. */
+  tracesSampleRate?: number;
+  /** Release identifier (git sha / version). Optional — undefined omits the field. */
+  release?: string;
 }): void {
   Sentry.init({
     dsn: opts.dsn,
     environment: opts.environment,
-    tracesSampleRate: opts.tracesSampleRate,
+    release: opts.release,
     sendDefaultPii: false,
+    tracesSampleRate: opts.tracesSampleRate ?? 0.0,
+    // Replay would screen-record the merchant unlock UI + payment confirms.
+    // Pin both to 0.0 so a future SDK opt-in can't silently enable it.
+    replaysSessionSampleRate: 0.0,
+    replaysOnErrorSampleRate: 0.0,
     integrations: [],
   });
 }

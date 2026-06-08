@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { Component, type ErrorInfo, type ReactNode } from "react";
 
 interface Props {

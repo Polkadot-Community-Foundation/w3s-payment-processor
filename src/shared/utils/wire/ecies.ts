@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * VENDORED VERBATIM from `packages/w3s-receiver-core/src/ecies/index.ts`.
  * Keep byte-for-byte in sync — shared wire contract, pinned to the Android

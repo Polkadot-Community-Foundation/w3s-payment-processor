@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * VENDORED VERBATIM from `packages/w3s-receiver-core/src/codec/index.ts`.
  * Keep byte-for-byte in sync — this is the shared wire contract, pinned to the

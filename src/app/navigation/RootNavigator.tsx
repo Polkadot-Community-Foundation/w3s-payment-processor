@@ -1,10 +1,6 @@
-/**
- * DIRECTION A · "Daybook" shell. Responsive: a sidebar on desktop, bottom tabs
- * on a phone. Holds the active tab + the single payment-stream instance and
- * routes between Today / All payments / Reports. Connection + claims problems
- * surface as calm banners (or a full state screen before any data has landed),
- * never as silent gaps.
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { useState, type ReactNode } from "react";
 
 import { Icon, type IconName } from "@/shared/components/Icon.tsx";

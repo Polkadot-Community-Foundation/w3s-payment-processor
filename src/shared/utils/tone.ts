@@ -1,4 +1,6 @@
-/** Semantic tone → theme-token triplet. Shared by badges, dots, buttons, states. */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 export type Tone = "green" | "amber" | "red" | "blue" | "neutral";
 
 export interface ToneColors {

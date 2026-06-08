@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * DIRECTION A · "Daybook" — Reports. The X running total (a peek, changes
  * nothing), the close-out card (files a numbered Z report and starts a fresh

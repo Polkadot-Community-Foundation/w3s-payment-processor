@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Presentation-only formatting for the back-office UI. On-chain amounts are
  * integer planck; `toToken` converts at this one choke point (BigInt → number)
@@ -6,23 +9,19 @@
  */
 import { formatPlanck } from "@/shared/utils/format.ts";
 
-/** Integer planck (string or bigint) → token-unit number for display. */
 export function toToken(planck: string | bigint, decimals: number): number {
   const value = typeof planck === "bigint" ? planck : BigInt(planck || "0");
   return Number(formatPlanck(value, decimals));
 }
 
-/** "1,234.50" — always two decimals, grouped thousands. */
 export function fmtCash(n: number): string {
   return Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-/** "1,234" — grouped integer. */
 export function fmtInt(n: number): string {
   return Number(n).toLocaleString("en-US");
 }
 
-/** "7:42 PM" */
 export function fmtTime(ms: number): string {
   const d = new Date(ms);
   let h = d.getHours();
@@ -33,7 +32,6 @@ export function fmtTime(ms: number): string {
   return `${h}:${String(m).padStart(2, "0")} ${ap}`;
 }
 
-/** "7:00 PM" — the hour bucket label. */
 export function fmtHour(ms: number): string {
   const d = new Date(ms);
   let h = d.getHours();
@@ -43,13 +41,11 @@ export function fmtHour(ms: number): string {
   return `${h}:00 ${ap}`;
 }
 
-/** "5 Jun, 7:42 PM" */
 export function fmtDayTime(ms: number): string {
   const day = new Date(ms).toLocaleDateString("en-US", { day: "numeric", month: "short" });
   return `${day}, ${fmtTime(ms)}`;
 }
 
-/** "3 min ago" / "2h 14m ago" relative to `nowMs` (defaults to live clock). */
 export function timeAgo(ms: number, nowMs: number = Date.now()): string {
   const mins = Math.round((nowMs - ms) / 60000);
   if (mins < 1) return "just now";
@@ -58,7 +54,6 @@ export function timeAgo(ms: number, nowMs: number = Date.now()): string {
   return `${h}h ${mins % 60}m ago`;
 }
 
-/** Stable warm-spectrum swatch per terminal id (deterministic hue from a hash). */
 export function tillColor(id: string): string {
   let hash = 0;
   for (let i = 0; i < id.length; i += 1) hash = (hash * 31 + id.charCodeAt(i)) % 360;

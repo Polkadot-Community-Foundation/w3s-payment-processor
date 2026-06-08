@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /** Lifecycle pill + v1/v2 source tag for payment rows and the detail sheet. */
 import { tone, type Tone } from "@/shared/utils/tone.ts";
 import type { PaymentLifecycle } from "@/features/dashboard/types.ts";

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Host account access. v2 claims depend on a product account derived by the
  * Polkadot host for this product; anonymous host sessions return NotConnected,

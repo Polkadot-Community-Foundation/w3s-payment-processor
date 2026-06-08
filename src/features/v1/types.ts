@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import type { ResolvedPayout } from "@/config.ts"
 
 /** Lifecycle status as carried by the on-chain registry. */
@@ -36,7 +39,6 @@ export interface PaymentEvent {
   blockNumber: number;
   blockHash: string;
   eventIndex: number;
-  /** Extrinsic index within the block, when the event came from an extrinsic. */
   extrinsicIndex?: number;
   /** Which event matched (audit/debug; the same credit may surface via several). */
   source: CreditSource;
@@ -47,9 +49,7 @@ export interface PaymentEvent {
   fromHex?: string;
   /** Transferred amount in integer planck, as a decimal string. */
   amountPlanck: string;
-  /** Wall-clock (ms) when the processor recorded the event. */
   observedAtMs: number;
-  /** Manual reconcile toggle (v1 rows can be marked reconciled in the Feed). */
   reconciled: boolean;
 }
 
@@ -77,7 +77,6 @@ export interface ZReportRecord extends ReportSnapshot {
   source: "v1";
 }
 
-/** Persisted v1 report cursor. */
 export interface ReportState {
   /** First block of the open (not-yet-closed) fiscal period. */
   periodStartBlock: number;

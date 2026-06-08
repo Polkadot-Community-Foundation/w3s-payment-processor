@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * v1 monitor engine: resolves terminals, hydrates durable state, backfills from
  * the checkpoint, tails the finalized head, and polls balances — writing all

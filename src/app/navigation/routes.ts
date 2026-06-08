@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import type { IconName } from "@/shared/components/Icon.tsx";
 
 export const ROUTES = {

@@ -4,6 +4,8 @@ skills
 node_modules
 dist
 *.tsbuildinfo
+*.car
+
 
 # Local env / secrets — the merchant mnemonic and any local overrides.
 .env
@@ -20,3 +22,11 @@ dist
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# AI coding-agent session artifacts — never commit these.
+# Intentional team config (.claude/commands|skills|agents/ and CLAUDE.md) is
+# NOT ignored; add it explicitly if the team adopts it.
+.claude/sessions/
+.claude/cache/
+.claude/settings.local.json
+.opencode

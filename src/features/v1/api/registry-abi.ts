@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Read-only slice of the W3SPayMerchantRegistry ABI. Matches
  * `apps/w3spay-admin/src/shared/api/registry-abi.ts` for the two functions the

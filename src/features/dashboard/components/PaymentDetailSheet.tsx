@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Payment detail sheet — tapping a payment row opens this. Shows the full
  * lifecycle status, v1/v2 source, terminal, amount, block, payer, and the

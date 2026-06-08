@@ -1,5 +1,6 @@
 [app]
-id = "w3spaymentprocessor.dot"
+# `id` is rewritten from $VITE_DOTNS_PRODUCT_DOMAIN at deploy time by deploy.sh. Do NOT hardcode a real .dot name here.
+id = "PLACEHOLDER_REWRITTEN_BY_DEPLOY_SH"
 name = "W3sPay Payment Processor"
 version = "0.1.0"
 app_type = "spa"

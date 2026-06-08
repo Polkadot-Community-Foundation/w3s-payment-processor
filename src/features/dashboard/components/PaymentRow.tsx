@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * One statement row in the unified stream. Shows a colored lifecycle pill
  * (detected → finalizing → confirmed) and a v1/v2 source tag. Tapping the row

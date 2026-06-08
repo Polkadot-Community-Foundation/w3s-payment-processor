@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Host statement-store subscription. The v2 orchestrator subscribes to all
  * enabled terminal topics in one `matchAny` subscription and routes each

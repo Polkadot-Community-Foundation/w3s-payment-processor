@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * On-chain token balance lookup on the People-system parachain. The token is a
  * `pallet-assets` foreign asset keyed by its XCM Location, so the balance is

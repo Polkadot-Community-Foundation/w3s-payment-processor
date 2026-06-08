@@ -1,8 +1,6 @@
-/**
- * Money — a mono (or serif) tabular numeral followed by the token symbol unit.
- * The unit is the live configured token (`W3T` by default); the design's
- * generic "CASH" maps to whatever `VITE_TOKEN_SYMBOL` the bundle ships.
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import type { CSSProperties } from "react";
 
 import { envConfig } from "@/config.ts";

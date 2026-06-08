@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { useProcessorConfig } from "@/shared/store/useProcessorConfig.tsx";
 import { useV1Monitor } from "@/features/v1/store/V1MonitorProvider.tsx";
 import { useV2Monitor } from "@/features/v2/store/V2MonitorProvider.tsx";

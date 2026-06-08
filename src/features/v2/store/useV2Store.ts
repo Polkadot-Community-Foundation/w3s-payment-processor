@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { create } from "zustand";
 
 import type { PaymentRecord } from "@/features/v2/types.ts";

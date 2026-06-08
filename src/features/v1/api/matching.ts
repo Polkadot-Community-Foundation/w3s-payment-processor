@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import type { CreditSource, PaymentEvent, V1Terminal } from "@/features/v1/types.ts";
 
 /**
@@ -15,25 +18,20 @@ import type { CreditSource, PaymentEvent, V1Terminal } from "@/features/v1/types
  */
 export interface NormalizedCredit {
   source: CreditSource;
-  /** XCM asset Location parts — present only for `assets-transferred`. */
   assetParachainId?: number;
   assetPalletInstance?: number;
   assetGeneralIndex?: bigint;
-  /** 0x-AccountId32 of the recipient. */
   toHex: string;
-  /** 0x-AccountId32 of the sender, when decodable (Assets only). */
   fromHex?: string;
   amountPlanck: bigint;
 }
 
-/** The token's asset identity (parachain + pallet instance + general index). */
 export interface TokenMatcher {
   parachainId: number;
   palletInstance: number;
   generalIndex: bigint;
 }
 
-/** True when an `assets-transferred` credit carries the configured token asset. */
 export function isTokenTransfer(credit: NormalizedCredit, token: TokenMatcher): boolean {
   return (
     credit.assetParachainId === token.parachainId &&
@@ -53,7 +51,6 @@ export interface TransferContext {
   blockNumber: number;
   blockHash: string;
   eventIndex: number;
-  /** Extrinsic index of the event's block phase, when it came from an extrinsic. */
   extrinsicIndex?: number;
   observedAtMs: number;
 }

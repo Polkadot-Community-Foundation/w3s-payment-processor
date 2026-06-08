@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Remote merchant-credential unlock. The per-merchant secret bundle is NEVER
  * bundled into the SPA: at unlock the merchant enters their `groupId`, the app

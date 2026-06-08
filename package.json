@@ -2,6 +2,7 @@
   "name": "@parity/w3s-payment-processor",
   "version": "0.1.0",
   "private": true,
+  "license": "GPL-3.0-or-later",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 5176 --strictPort",
@@ -35,7 +36,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.0.4",
-    "bulletin-deploy": "^0.8.3",
+    "bulletin-deploy": "^0.10.0",
     "typescript": "^5",
     "vite": "^7.1.12",
     "vite-node": "^3.0.0",

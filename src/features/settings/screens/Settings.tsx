@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { Btn } from "@/shared/components/controls.tsx";
 import { DisplayIf } from "@/shared/components/DisplayIf.tsx";
 import { Icon } from "@/shared/components/Icon.tsx";

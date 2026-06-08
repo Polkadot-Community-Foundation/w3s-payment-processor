@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * v1 chain watch: backfill from the persisted checkpoint, then tail the
  * finalized head. Read-only — the chain has already settled, so we track

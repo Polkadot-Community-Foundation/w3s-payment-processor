@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { DisplayIf } from "@/shared/components/DisplayIf.tsx";

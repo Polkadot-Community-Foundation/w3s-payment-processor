@@ -1,10 +1,12 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Planck ↔ decimal-string conversion. All amounts on-chain and on the wire are
  * integer planck (`10^decimals` sub-units); the UI and the claim engine convert
  * at these two choke points. BigInt throughout — never floats.
  */
 
-/** Format an integer planck amount as a trimmed decimal string ("12.34", "5"). */
 export function formatPlanck(planck: bigint, decimals: number): string {
   const negative = planck < 0n;
   const abs = negative ? -planck : planck;

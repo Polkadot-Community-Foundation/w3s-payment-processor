@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * DIRECTION A · "Daybook" — All payments. One stream, newest first, grouped by
  * the hour like a statement. Status filter (all / to-check / checked) acts on

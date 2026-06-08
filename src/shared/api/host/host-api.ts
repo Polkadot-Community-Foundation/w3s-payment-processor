@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Single facade over the Novasama Host API SDK. Product code imports host
  * primitives through here, never directly from `@novasamatech/host-api-wrapper`

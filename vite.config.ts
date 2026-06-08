@@ -15,8 +15,7 @@ export default defineConfig({
     project: "w3spay"
   })],
   resolve: {
-    // Absolute `@/` imports → `src/`, so moving a feature does not cascade
-    // into relative-path churn across the tree.
+
     alias: {
       "@": path.resolve(here, "src"),
     },
@@ -31,5 +30,13 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],
+    env: {
+      // config.ts throws at module load when this is unset (no defensible
+      // default — a hardcoded value would silently mis-credit v2 claims in
+      // production). Tests don't exercise the on-chain identity, so a
+      // deterministic placeholder is sufficient and keeps CI from needing
+      // to wire a real .dot per workflow.
+      VITE_DOTNS_PRODUCT_DOMAIN: "test.dot",
+    },
   },
 });

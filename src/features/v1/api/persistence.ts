@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * v1 durable persistence over the host KV. Append-heavy logs use an
  * index + per-item layout so each new payment is a bounded write. All keys are
@@ -11,16 +14,12 @@ const CHECKPOINT_KEY = "v1-checkpoint";
 const REPORT_STATE_KEY = "v1-report-state";
 const ZREPORTS_INDEX_KEY = "v1-zreports:index";
 
-// ─── tx-log ──────────────────────────────────────────────────────────────
-
-/** Load the full tx-log in recorded order, skipping any item lost from the index. */
 export async function loadTxLog(kv: KvStore): Promise<PaymentEvent[]> {
   const ids = (await kv.getJSON<string[]>(TXLOG_INDEX_KEY)) ?? [];
   const items = await Promise.all(ids.map((id) => kv.getJSON<PaymentEvent>(`v1-txlog:item:${id}`)));
   return items.filter((event): event is PaymentEvent => event != null);
 }
 
-/** Load just the set of recorded payment ids — the dedupe gate. */
 export async function loadTxLogIds(kv: KvStore): Promise<Set<string>> {
   return new Set((await kv.getJSON<string[]>(TXLOG_INDEX_KEY)) ?? []);
 }
@@ -40,14 +39,11 @@ export async function appendTxLog(kv: KvStore, events: readonly PaymentEvent[]):
   await kv.setJSON(TXLOG_INDEX_KEY, ids);
 }
 
-/** Toggle the reconcile flag on one recorded event (no-op if it is gone). */
 export async function setEventReconciled(kv: KvStore, paymentId: string, reconciled: boolean): Promise<void> {
   const event = await kv.getJSON<PaymentEvent>(`v1-txlog:item:${paymentId}`);
   if (!event) return;
   await kv.setJSON(`v1-txlog:item:${paymentId}`, { ...event, reconciled });
 }
-
-// ─── checkpoint ────────────────────────────────────────────────────────────
 
 /** Last finalized block fully processed (the WS resume cursor). */
 export async function loadCheckpoint(kv: KvStore): Promise<number | undefined> {
@@ -58,8 +54,6 @@ export async function saveCheckpoint(kv: KvStore, blockNumber: number): Promise<
   await kv.setJSON(CHECKPOINT_KEY, blockNumber);
 }
 
-// ─── report state ────────────────────────────────────────────────────────
-
 export async function loadReportState(kv: KvStore): Promise<ReportState | undefined> {
   return kv.getJSON<ReportState>(REPORT_STATE_KEY);
 }
@@ -67,8 +61,6 @@ export async function loadReportState(kv: KvStore): Promise<ReportState | undefi
 export async function saveReportState(kv: KvStore, state: ReportState): Promise<void> {
   await kv.setJSON(REPORT_STATE_KEY, state);
 }
-
-// ─── Z reports ─────────────────────────────────────────────────────────────
 
 export async function loadZReports(kv: KvStore): Promise<ZReportRecord[]> {
   const seqs = (await kv.getJSON<number[]>(ZREPORTS_INDEX_KEY)) ?? [];

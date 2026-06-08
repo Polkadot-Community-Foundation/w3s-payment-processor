@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { ROUTES, type Tab } from "@/app/navigation/routes.ts";
 
 export const LINKING_PATHS: Record<Tab, string> = {

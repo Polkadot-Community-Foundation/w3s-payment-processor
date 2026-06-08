@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * v2 durable records over the host KV: `v2-records:index` (id[]) +
  * `v2-records:item:<id>`. Idempotent across restarts — the index is rehydrated

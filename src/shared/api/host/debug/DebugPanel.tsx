@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Debug overlay panel — a floating "toolbox" button that opens a
  * console / timeline / host-state / actions panel.
@@ -77,8 +80,6 @@ import {
   type DebugLogRecord,
   type DebugStoreState,
 } from "./index.ts";
-
-// ── Constants ──────────────────────────────────────────────────────
 
 const PANEL_DEFAULT_POSITION = { right: 16, bottom: 16 };
 const PANEL_DEFAULT_SIZE = { width: 480, height: 520 };
@@ -201,8 +202,6 @@ function clampedPosition(
   };
 }
 
-// ── Helpers ────────────────────────────────────────────────────────
-
 function formatTimestamp(ts: number): string {
   const d = new Date(ts);
   const hh = String(d.getHours()).padStart(2, "0");
@@ -286,8 +285,6 @@ function downloadTextFile(name: string, text: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-// ── Dump builders (per-tab) ────────────────────────────────────────
-
 function buildConsoleDump(
   logs: readonly DebugLogRecord[],
   filter: string,
@@ -317,8 +314,6 @@ function buildTimelineDump(events: readonly DebugBootEvent[]): string {
 function buildFullSnapshotDump(state: DebugStoreState): string {
   return JSON.stringify(state, null, 2);
 }
-
-// ── Dump modal (iOS fallback) ──────────────────────────────────────
 
 interface DumpModalState {
   title: string;
@@ -467,8 +462,6 @@ function DumpModal({
     </div>
   );
 }
-
-// ── Component ─────────────────────────────────────────────────────
 
 export interface DebugPanelProps {
   /**
@@ -630,8 +623,6 @@ export function DebugPanel(props: DebugPanelProps = {}): React.ReactElement {
     }
   }, []);
 
-  // ── Resize handles ─────────────────────────────────────────────
-
   const resizeRef = useRef<ResizeState | null>(null);
 
   const onResizePointerDown = useCallback(
@@ -717,8 +708,6 @@ export function DebugPanel(props: DebugPanelProps = {}): React.ReactElement {
     };
   }, []);
 
-  // ── Maximize / restore ────────────────────────────────────────
-
   const isMaximized = preMaximizeGeometry !== null;
 
   const handleMaximizeToggle = useCallback(() => {
@@ -757,8 +746,6 @@ export function DebugPanel(props: DebugPanelProps = {}): React.ReactElement {
       setPosition({ right: VIEWPORT_MARGIN, bottom: VIEWPORT_MARGIN });
     }
   }, [isMaximized, preMaximizeGeometry, position, size]);
-
-  // ── Copy / dump actions (per-tab + global) ─────────────────────
 
   const copyFilteredLogs = useCallback(async () => {
     const body = buildConsoleDump(filteredLogs, filter);
@@ -1057,8 +1044,6 @@ export function DebugPanel(props: DebugPanelProps = {}): React.ReactElement {
   );
 }
 
-// ── Resize handle (one per direction) ─────────────────────────────
-
 const RESIZE_HANDLE_STYLES: Record<ResizeDirection, React.CSSProperties> = {
   // Edges — 8px thick strips. Invisible (no background, no border)
   // until the user hovers; the cursor + touchAction carry the
@@ -1133,8 +1118,6 @@ function ResizeHandle({
     </div>
   );
 }
-
-// ── Tabs ───────────────────────────────────────────────────────────
 
 interface ConsoleTabProps {
   state: DebugStoreState;

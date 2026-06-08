@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import type { ClaimResult } from "@/features/v2/types.ts";
 
 /**
@@ -45,14 +48,6 @@ export interface CoinsTopUpManager {
   topUp(amount: bigint, source: { type: "coins"; keys: Uint8Array[] }, into?: number): Promise<void>;
 }
 
-/**
- * Default upper bound on `manager.topUp`. Generous for a real chain top-up
- * (the host has to consume each coin and credit the merchant) but short
- * enough to surface a hung response within one merchant retry window — the
- * known hang case is a `PaymentTopUpErr` variant index the SDK build doesn't
- * recognize, which drops the response at `Message.dec` and leaves the
- * top-up Promise pending forever.
- */
 const DEFAULT_TOPUP_TIMEOUT_MS = 30_000;
 
 export interface CreateCoinsClaimEngineOptions {

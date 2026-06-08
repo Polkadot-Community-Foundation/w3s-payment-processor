@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * PAPI client cache. One client per genesis hash + transport strategy.
  *

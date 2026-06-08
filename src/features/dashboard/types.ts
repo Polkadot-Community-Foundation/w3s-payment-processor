@@ -1,10 +1,11 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import type { TerminalStatus } from "@/features/v1/types.ts";
 
-/** A terminal as the back-office UI shows it (id + friendly name + lifecycle). */
 export interface StreamTerminal {
   id: string;
   name: string;
-  /** SS58 payout address for display. */
   address?: string;
   status?: TerminalStatus;
 }
@@ -36,15 +37,11 @@ export interface StreamPayment {
   checked: boolean;
   attention: boolean;
   status: PaymentLifecycle;
-  /** Dedupe id / payload id — the canonical reference shown in the detail sheet. */
   reference: string;
-  /** v1: block the credit landed in. */
   blockNumber?: number;
   /** v1: 0x-AccountId32 of the payer, when decodable. */
   payerHex?: string;
-  /** v2: number of bearer coins in the payment. */
   coinsCount?: number;
-  /** v2: non-settled claim reason, when present. */
   claimNote?: string;
 }
 
@@ -53,14 +50,12 @@ export interface TerminalTotal {
   count: number;
 }
 
-/** Per-terminal + grand rollup over the open period (the X "running total"). */
 export interface StreamTotals {
   perTill: Map<string, TerminalTotal>;
   grand: number;
   count: number;
 }
 
-/** A past end-of-day close (Z report), flattened for display. */
 export interface ZHistoryEntry {
   seq: number;
   closedAtMs: number;

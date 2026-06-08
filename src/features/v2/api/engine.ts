@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * v2 monitor engine: hydrates durable records, verifies the wallet binding,
  * selects the claim engine, and (in-host only) subscribes to the terminal

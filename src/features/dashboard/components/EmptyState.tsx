@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { Icon } from "@/shared/components/Icon.tsx";
 
 /** Inline "no payments" panel — calm, no jargon. `filtered` = filters hid them all. */

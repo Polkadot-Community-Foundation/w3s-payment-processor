@@ -1,14 +1,12 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { p256 } from "@noble/curves/nist.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
 
 /**
  * Parse a P-256 EC private key from a PEM string into the 32-byte scalar the
- * ECIES decrypt path needs. Accepts both encodings the provisioning tools
- * emit:
- *   - SEC1   `-----BEGIN EC PRIVATE KEY-----`  (OpenSSL "traditional", Python
- *            `serialization.PrivateFormat.TraditionalOpenSSL`)
- *   - PKCS#8 `-----BEGIN PRIVATE KEY-----`     (Python `PrivateFormat.PKCS8`)
- *
+ * ECIES decrypt path needs.
  * Enforces P-256 (prime256v1): the curve OID is verified wherever the DER
  * carries it, and the scalar is always validated against the P-256 group by
  * deriving its public key. Anything else throws `PemError`.
@@ -153,7 +151,6 @@ export interface ParsedP256Key {
   publicKeyUncompressed: Uint8Array;
 }
 
-/** Parse and validate a P-256 EC private key PEM (SEC1 or PKCS#8). */
 export function parseP256PrivateKeyPem(pem: string): ParsedP256Key {
   const { label, der } = pemToDer(pem);
   let scalar: Uint8Array;

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Low-level SCALE helpers for inspecting wire-level statement-store envelopes.
  *

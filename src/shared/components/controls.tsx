@@ -1,4 +1,6 @@
-/** Buttons + segmented control (tabs / filters). Ported from the Daybook kit. */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import type { CSSProperties, ReactNode } from "react";
 
 import { DisplayIf } from "@/shared/components/DisplayIf.tsx";

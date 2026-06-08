@@ -5,31 +5,87 @@
 # Usage:
 #   ./deploy.sh [name-or-domain]
 #
-# Defaults to "w3spaymentprocessor.dot" if no name is given.
+# Domain resolution (highest priority first):
+#   1. VITE_DOTNS_PRODUCT_DOMAIN env var — preferred; shared with src/config.ts
+#      so a single value drives BOTH the deploy target AND the v2 host product
+#      account resolved at runtime.
+#   2. DOTNS_PRODUCT_DOMAIN env var      — legacy alias for CI configs that
+#      have not yet migrated to the VITE_-prefixed name.
+#   3. $1 positional arg                 — local override, e.g. `./deploy.sh staging.dot`.
+# The resolved value MUST end in `.dot`. If both env and arg are set they MUST
+# match, or the script aborts (silent overrides have caused staging/prod swaps).
+# When none of the above are set, the script aborts — there is NO default
+# domain. A hardcoded fallback would publish the SPA to the wrong chain
+# identity on the first deploy of a staging/fork/merchant-pilot instance.
 #
 # Required env:
 #   - MNEMONIC or DOTNS_MNEMONIC
 #
 # Optional env:
-#   - DOTNS_GATEWAY_BASE   Final gateway host suffix (default: dot.li).
-#   - BULLETIN_ENV         bulletin-deploy --env id (default: paseo-next-v2).
-#                          Coinage + Paseo People Next live in v2; do not change
-#                          unless both the host network AND the coinage runtime
-#                          are present in the chosen env.
-#   - VITE_NETWORK         App chain key. Defaults to BULLETIN_ENV and MUST match it.
+#   - VITE_DOTNS_PRODUCT_DOMAIN  Target `.dot` name. REQUIRED — no default.
+#   - DOTNS_PRODUCT_DOMAIN      Legacy alias; read only if VITE_DOTNS_PRODUCT_DOMAIN
+#                               is unset.
+#   - DOTNS_GATEWAY_BASE        Final gateway host suffix (default: dot.li).
+#   - BULLETIN_ENV              bulletin-deploy --env id (default: paseo-next-v2).
+#                               Coinage + Paseo People Next live in v2; do not
+#                               change unless both the host network AND the
+#                               coinage runtime are present in the chosen env.
+#   - VITE_NETWORK              App chain key. Defaults to BULLETIN_ENV and
+#                               MUST match it.
 #
 set -euo pipefail
 
+# Load Vite-style .env so `./deploy.sh` works the same way as `vite dev`/
+# `vite build`: variables declared in .env (and .env.local, which overrides)
+# are exported into the shell so a deploy resolves VITE_DOTNS_PRODUCT_DOMAIN
+# the same way the SPA does at build time. Two distinct precedence rules:
+#   .env       — only set vars that are NOT already in the parent shell, so
+#                an explicit `VITE_DOTNS_PRODUCT_DOMAIN=foo ./deploy.sh`
+#                (CI / one-off) wins over the shared repo default.
+#   .env.local — always overwrites; gitignored per-developer override that
+#                wins over .env (matches Vite's own precedence).
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+_load_env() {
+  local file="$1" force="$2"
+  [[ -f "$file" ]] || return 0
+  while IFS='=' read -r key val; do
+    # skip blank lines and comments
+    [[ -z "$key" || "$key" == \#* ]] && continue
+    # strip optional surrounding quotes
+    val="${val%\"}"; val="${val#\"}"; val="${val%\'}"; val="${val#\'}"
+    if [[ "$force" == "1" || -z "${!key:-}" ]]; then
+      export "$key=$val"
+    fi
+  done < <(grep -v '^[[:space:]]*#' "$file" | grep -v '^[[:space:]]*$' || true)
+}
+_load_env "$SCRIPT_DIR/.env" 0
+_load_env "$SCRIPT_DIR/.env.local" 1
 BUILD_DIR="$SCRIPT_DIR/dist"
 GATEWAY_BASE="${DOTNS_GATEWAY_BASE:-dot.li}"
 BULLETIN_ENV="${BULLETIN_ENV:-paseo-next-v2}"
-TARGET="${1:-w3spaymentprocessor.dot}"
-MIN_BULLETIN_DEPLOY_VERSION="0.8.3"
-
-if [[ "$TARGET" != *.dot ]]; then
-  TARGET="${TARGET}.dot"
+MIN_BULLETIN_DEPLOY_VERSION="0.10.0"
+_arg_domain="${1:-}"
+# Prefer VITE_-prefixed name (shared with src/config.ts); fall back to legacy.
+# This is the SINGLE source of truth: the resolved value is exported as
+# VITE_DOTNS_PRODUCT_DOMAIN, passed positionally to `bulletin-deploy` as the
+# target domain, AND baked into the SPA at build time via Vite.
+_domain_env="${VITE_DOTNS_PRODUCT_DOMAIN:-${DOTNS_PRODUCT_DOMAIN:-}}"
+if [[ -n "$_arg_domain" && -n "$_domain_env" && "$_arg_domain" != "$_domain_env" ]]; then
+  echo "Error: VITE_DOTNS_PRODUCT_DOMAIN=\"$_domain_env\" and arg \"$_arg_domain\" disagree. Unset one."
+  exit 1
 fi
+VITE_DOTNS_PRODUCT_DOMAIN="${_domain_env:-${_arg_domain:-}}"
+if [[ -z "$VITE_DOTNS_PRODUCT_DOMAIN" ]]; then
+  echo "Error: VITE_DOTNS_PRODUCT_DOMAIN (or legacy DOTNS_PRODUCT_DOMAIN) is not set, and no positional arg was given."
+  echo "Set the target .dot name in your env, in .env, or pass it as \$1, e.g. ./deploy.sh myproduct.dot"
+  exit 1
+fi
+if [[ "$VITE_DOTNS_PRODUCT_DOMAIN" != *.dot ]]; then
+  VITE_DOTNS_PRODUCT_DOMAIN="${VITE_DOTNS_PRODUCT_DOMAIN}.dot"
+fi
+# Legacy alias kept exported for downstream tooling that reads the un-prefixed name.
+export DOTNS_PRODUCT_DOMAIN="$VITE_DOTNS_PRODUCT_DOMAIN"
+export VITE_DOTNS_PRODUCT_DOMAIN
 
 version_gte() {
   local current="$1"
@@ -164,24 +220,22 @@ if ! npm --prefix "$SCRIPT_DIR" run validate-config; then
   echo "Error: static config failed validation (see the message above)."
   exit 1
 fi
-
 echo "==> Using network: ${VITE_NETWORK}"
 echo "==> Building W3sPay Payment Processor SPA..."
 npm --prefix "$SCRIPT_DIR" run build
 
-echo "==> Copying dot.li manifest..."
-cp "$SCRIPT_DIR/bundle/manifest.toml" "$BUILD_DIR/manifest.toml"
+echo "==> Copying dot.li manifest (rewriting id=${VITE_DOTNS_PRODUCT_DOMAIN})..."
+_id="${VITE_DOTNS_PRODUCT_DOMAIN%.dot}"
+sed -E "s|^id = \".*\"$|id = \"${_id}.dot\"|" "$SCRIPT_DIR/bundle/manifest.toml" > "$BUILD_DIR/manifest.toml"
 
 if [[ ! -f "$BUILD_DIR/manifest.toml" ]]; then
   echo "Error: manifest.toml was not copied into the build output."
   exit 1
 fi
-
 echo ""
-echo "==> Deploying ${TARGET} to Paseo Next v2 (BULLETIN_ENV=${BULLETIN_ENV})..."
-bulletin-deploy --publish --env "$BULLETIN_ENV" --mnemonic "$RAW_MNEMONIC" "$BUILD_DIR" "$TARGET"
-
-NAME="${TARGET%.dot}"
+echo "==> Deploying ${VITE_DOTNS_PRODUCT_DOMAIN} to Paseo Next v2 (BULLETIN_ENV=${BULLETIN_ENV})..."
+bulletin-deploy --env "$BULLETIN_ENV" --mnemonic "$RAW_MNEMONIC" "$BUILD_DIR" "$VITE_DOTNS_PRODUCT_DOMAIN"
+NAME="${VITE_DOTNS_PRODUCT_DOMAIN%.dot}"
 echo ""
 echo "==> Done! Live at:"
 echo "    https://${NAME}.${GATEWAY_BASE}"

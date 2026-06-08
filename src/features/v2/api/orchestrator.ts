@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * v2 ingest pipeline: topic-match → ECIES decrypt → dedupe by payload id →
  * claim (per-terminal binding gate) → persist. Decrypt/decode failures on open

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { create } from "zustand";
 
 import type { PaymentEvent, ReportState, V1Terminal, ZReportRecord } from "@/features/v1/types.ts";

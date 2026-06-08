@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Generic contract read over pallet-revive. Vendored from
  * `apps/w3spay-admin/src/shared/api/contracts/read.ts`. Runs a
@@ -15,20 +18,14 @@ export interface ReadContractOptions {
   readonly abi: Abi;
   readonly functionName: string;
   readonly args?: ReadonlyArray<unknown>;
-  /**
-   * SS58 origin for the dry-run. Use a well-known mapped account; NOT a wallet
-   * that may be unmapped (that errors `AccountUnmapped`).
-   */
   readonly origin: string;
   readonly at?: "best" | "finalized";
 }
 
-/** Cast the opaque `unsafeApi.apis.ReviveApi` surface to the narrow shim. */
 export function reviveApi(unsafeApi: unknown): ReviveApiShim {
   return (unsafeApi as { apis: { ReviveApi: ReviveApiShim } }).apis.ReviveApi;
 }
 
-/** Render a runtime dry-run error value as a stable string (handles bigints). */
 export function stringifyResultValue(value: unknown): string {
   try {
     return JSON.stringify(value, (_key, v) => (typeof v === "bigint" ? v.toString() : v));
@@ -37,7 +34,6 @@ export function stringifyResultValue(value: unknown): string {
   }
 }
 
-/** Read from a revive contract via `ReviveApi.call(...)` dry-run. */
 export async function readContract<T = unknown>(
   client: PolkadotClient,
   options: ReadContractOptions,

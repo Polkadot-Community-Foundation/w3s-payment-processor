@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * DIRECTION A · "Daybook" — Today. Leads with a serif takings figure, then
  * per-terminal totals and the latest slice of the live stream. Reads like the

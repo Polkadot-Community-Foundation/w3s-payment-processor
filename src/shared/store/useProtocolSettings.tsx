@@ -1,7 +1,6 @@
-/**
- * Merchant protocol-listening preferences. Build-time `.env` values are the
- * defaults; localStorage stores merchant overrides on this device.
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { envConfig, type ProtocolEnablement } from "@/config.ts";

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * v1 watch resilience supervisor. Keeps the chain tail live across host
  * pause/resume cycles by restarting the watch loop on visibility resume and

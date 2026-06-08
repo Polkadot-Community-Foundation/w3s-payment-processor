@@ -1,4 +1,6 @@
-/** DIRECTION A · "Daybook" navigation chrome: sidebar (desktop), top bar, bottom tabs, theme toggle. */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { timeAgo } from "@/shared/utils/ui-format.ts";
 import { Icon } from "@/shared/components/Icon.tsx";
 import { ConnDot, Mark } from "@/shared/components/indicators.tsx";

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Light/dark theme. Tokens are scoped to `[data-theme]` on <html>; this provider
  * owns that attribute and persists the choice. The production chain stack is

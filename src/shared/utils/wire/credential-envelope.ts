@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * The credential-envelope format for the remote merchant credential bundle.
  *
@@ -52,8 +55,6 @@ export interface CredentialEnvelope {
   /** base64 AES-GCM `ciphertext ‖ tag`. */
   ciphertext: string;
 }
-
-// ── base64 ⇄ bytes (global atob/btoa; binary-string bridge) ──────────────────
 
 function bytesToBase64(bytes: Uint8Array): string {
   let binary = "";

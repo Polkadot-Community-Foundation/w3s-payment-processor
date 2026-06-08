@@ -1,11 +1,6 @@
-/**
- * The single bridge from the live v1/v2 monitor stores to the Daybook UI model.
- * Collapses both monitor paths into ONE reverse-chronological payment stream
- * over the open fiscal period, derives the running totals / unchecked count /
- * connection state, and exposes the two real actions: check-off (v1 reconcile)
- * and close-out (v1 Z-report commit). Money is converted planck → token units
- * here; fiscal math stays in planck inside the engine.
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { envConfig } from "@/config.ts";

@@ -1,4 +1,6 @@
-/** Status/affordance primitives: connection dot, badge, check toggle, logo, swatch, toast. */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
@@ -7,7 +9,6 @@ import { Icon, type IconName } from "@/shared/components/Icon.tsx";
 import { tillColor } from "@/shared/utils/ui-format.ts";
 import { tone, type Tone } from "@/shared/utils/tone.ts";
 
-/** The calm "is it healthy" signal. Maps 1:1 onto the monitor lifecycle. */
 export type ConnState = "live" | "connecting" | "syncing" | "problem";
 
 export const CONN: Record<ConnState, { label: string; tone: Tone; note: string }> = {
@@ -93,7 +94,6 @@ export function Badge({
   );
 }
 
-/** The "I matched this against my books" tick. */
 export function CheckToggle({ checked, onClick, size = 22, label }: { checked: boolean; onClick: () => void; size?: number; label?: boolean }) {
   return (
     <button
@@ -126,7 +126,6 @@ export function CheckToggle({ checked, onClick, size = 22, label }: { checked: b
   );
 }
 
-/** Logo mark — two concentric circles. */
 export function Mark({ size = 22 }: { size?: number }) {
   return (
     <span style={{ width: size, height: size, borderRadius: "50%", background: "var(--text-1)", display: "inline-flex", alignItems: "center", justifyContent: "center", flex: "0 0 auto" }}>
@@ -135,7 +134,6 @@ export function Mark({ size = 22 }: { size?: number }) {
   );
 }
 
-/** A small labelled terminal swatch dot. */
 export function TillDot({ id, size = 7 }: { id: string; size?: number }) {
   return <span style={{ width: size, height: size, borderRadius: "50%", background: tillColor(id), flex: "0 0 auto" }} />;
 }

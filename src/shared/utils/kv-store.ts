@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Durable key-value store — the monitor's system of record.
  *
@@ -13,7 +16,6 @@
 import { hostLocalStorage } from "@/shared/api/host/host-api.ts";
 import { isInHost } from "@/shared/api/host/connection.ts";
 
-/** Scope prefix for every processor key. */
 export const KV_SCOPE = "w3s-payment-processor";
 
 export interface KvStore {
@@ -22,7 +24,6 @@ export interface KvStore {
   remove(key: string): Promise<void>;
 }
 
-/** Host `host.data` durable KV. Reads fail soft to `undefined`. */
 export function createHostKvStore(prefix: string = KV_SCOPE): KvStore {
   return {
     async getJSON<T>(key: string): Promise<T | undefined> {
@@ -42,7 +43,6 @@ export function createHostKvStore(prefix: string = KV_SCOPE): KvStore {
   };
 }
 
-/** Browser `localStorage` KV (standalone / dev). */
 export function createBrowserKvStore(prefix: string = KV_SCOPE): KvStore {
   return {
     async getJSON<T>(key: string): Promise<T | undefined> {
@@ -83,10 +83,6 @@ export function createMemoryKvStore(backing: Map<string, string> = new Map(), pr
   };
 }
 
-/**
- * Resolve the best available durable backend for the current environment:
- * host `host.data` in-host, browser `localStorage` standalone, else memory.
- */
 export function resolveKvStore(prefix: string = KV_SCOPE): KvStore {
   if (isInHost()) return createHostKvStore(prefix);
   if (typeof window !== "undefined" && hasLocalStorage()) return createBrowserKvStore(prefix);

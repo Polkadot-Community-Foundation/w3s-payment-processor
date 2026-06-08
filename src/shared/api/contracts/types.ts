@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Low-level pallet-revive contract types. Vendored from
  * `apps/w3spay-admin/src/shared/api/contracts/types.ts`. PAPI v2's

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { createContext, useContext, type ReactNode } from "react";
 
 import type { ResolvedProcessorConfig } from "@/config.ts"

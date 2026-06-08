@@ -1,14 +1,16 @@
 import { defineConfig } from "bulletin-deploy";
 
-// Product manifest for the W3sPay Payment Processor SPA. `./deploy.sh` publishes
-// this to DotNS as `w3spaymentprocessor.dot`; `domain` MUST equal that deploy
-// target or `publishManifest` aborts. `icon.path` and `executables[].path` are
-// resolved relative to THIS file; `./dist` is Vite's build output that
-// `deploy.sh` uploads.
+
+const domain = process.env.VITE_DOTNS_PRODUCT_DOMAIN;
+if (!domain) {
+  throw new Error(
+    "VITE_DOTNS_PRODUCT_DOMAIN is not set. This env var must be set to the target DotNS domain for the deploy, and it is also embedded into the build as the product identity.",
+  );
+}
 export default defineConfig({
-  domain: "w3spaymentprocessor.dot",
+  domain,
   displayName: "W3sPay Payment Processor",
-  description: "Per-merchant monitor for RFC6 (v1) and Coinage (v2) payments",
+  description: "Per-merchant monitor for payments",
   icon: { path: "./icon.png", format: "png" },
   executables: [
     {

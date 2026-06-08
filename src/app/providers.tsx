@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { useMemo, type ReactNode } from "react";
 
 import { PolkadotHostGate } from "@/app/PolkadotHostGate.tsx";

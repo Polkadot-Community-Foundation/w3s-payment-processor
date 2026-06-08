@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Host detection + transport handshake + remote-origin permission. Trimmed
  * from `apps/w3spay/src/shared/api/host/connection.ts` to what a read-only
@@ -91,8 +94,6 @@ export async function connectToHost(timeoutMs: number = HOST_HANDSHAKE_TIMEOUT_M
 
   return inFlightHandshake;
 }
-
-/** Read the cached handshake outcome (post-`connectToHost`). */
 export function isHostConnected(): boolean {
   return connected;
 }
@@ -103,12 +104,13 @@ export interface RemoteOriginPermissionOutcome {
 }
 
 const remoteOriginCache = new Map<string, RemoteOriginPermissionOutcome>();
+const inFlightRemoteOrigins = new Map<string, Promise<RemoteOriginPermissionOutcome>>();
 
 /**
- * Ask the host to allowlist outbound WS/HTTP to one or more origins so the
- * sandbox lets the processor reach chain RPC endpoints (and Sentry). No-op
- * outside a host (the browser connects directly). Grants are cached per
- * origin-set after the first success.
+ * No-op outside a host (the browser connects directly). Grants are cached per
+ * origin-set after the first success, and concurrent calls for the same
+ * origin-set share a single in-flight promise so the boot-time call and the
+ * v1 engine's later call don't double-prompt the host.
  */
 export async function requestRemoteOriginPermission(
   origins: readonly string[],
@@ -117,27 +119,39 @@ export async function requestRemoteOriginPermission(
   const key = [...origins].sort().join("|");
   const cached = remoteOriginCache.get(key);
   if (cached) return cached;
+  const inFlight = inFlightRemoteOrigins.get(key);
+  if (inFlight) return inFlight;
 
-  const ready = await connectToHost();
-  if (!ready) return { granted: false, error: "host transport not ready" };
+  const pending = (async (): Promise<RemoteOriginPermissionOutcome> => {
+    const ready = await connectToHost();
+    if (!ready) return { granted: false, error: "host transport not ready" };
 
-  // The grant itself is unbounded in the SDK — a desktop host that never answers
-  // the "Remote" permission (or one that routes chain RPC through its bridge and
-  // never needs this WS allowlist) would otherwise wedge boot forever: v1's first
-  // await is `requestChainRemotePermissions`, so a hung grant strands the UI on
-  // "Connecting…". Bound it; on timeout we proceed ungranted (the bridge path, or
-  // a real WS-connect failure, surfaces instead of an infinite spinner).
-  const outcome = await withTimeout(
-    requestPermission({ tag: "Remote", value: [...origins] }).match<RemoteOriginPermissionOutcome>(
-      (granted) => ({ granted }),
-      (err) => ({ granted: false, error: err.payload?.reason ?? err.message }),
-    ),
-    HOST_HANDSHAKE_TIMEOUT_MS,
-    "[host] remote-origin permission",
-  ).catch((caught) => {
-    console.warn(`[host] remote-origin permission failed: ${caught instanceof Error ? caught.message : String(caught)}`);
-    return { granted: false, error: "remote-origin permission timed out" } as RemoteOriginPermissionOutcome;
-  });
-  if (outcome.granted) remoteOriginCache.set(key, outcome);
-  return outcome;
+    // The grant itself is unbounded in the SDK — a desktop host that never answers
+    // the "Remote" permission (or one that routes chain RPC through its bridge and
+    // never needs this WS allowlist) would otherwise wedge boot forever: v1's first
+    // await is `requestChainRemotePermissions`, so a hung grant strands the UI on
+    // "Connecting…". Bound it; on timeout we proceed ungranted (the bridge path, or
+    // a real WS-connect failure, surfaces instead of an infinite spinner).
+    return withTimeout(
+      requestPermission({ tag: "Remote", value: [...origins] }).match<RemoteOriginPermissionOutcome>(
+        (granted) => ({ granted }),
+        (err) => ({ granted: false, error: err.payload?.reason ?? err.message }),
+      ),
+      HOST_HANDSHAKE_TIMEOUT_MS,
+      "[host] remote-origin permission",
+    ).catch((caught) => {
+      console.warn(`[host] remote-origin permission failed: ${caught instanceof Error ? caught.message : String(caught)}`);
+      return { granted: false, error: "remote-origin permission timed out" } as RemoteOriginPermissionOutcome;
+    });
+  })()
+    .then((outcome) => {
+      if (outcome.granted) remoteOriginCache.set(key, outcome);
+      return outcome;
+    })
+    .finally(() => {
+      inFlightRemoteOrigins.delete(key);
+    });
+
+  inFlightRemoteOrigins.set(key, pending);
+  return pending;
 }

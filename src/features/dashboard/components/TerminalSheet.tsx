@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Terminal detail sheet — tapping a till card opens this.
  * Shows terminal ID + receiving address (both copyable) and the
@@ -12,8 +15,6 @@ import { Icon } from "@/shared/components/Icon.tsx";
 import { Money } from "@/shared/components/Money.tsx";
 import { fmtTime, tillColor } from "@/shared/utils/ui-format.ts";
 import type { StreamTerminal, StreamPayment } from "@/features/dashboard/types.ts";
-
-// ── helpers ──────────────────────────────────────────────────────────────────
 
 function truncateAddr(addr: string): string {
   if (addr.length <= 16) return addr;
@@ -77,8 +78,6 @@ function CopyField({ label, value, display }: { label: string; value: string; di
   );
 }
 
-// ── payment mini-row ──────────────────────────────────────────────────────────
-
 function PaymentMiniRow({ p, last }: { p: StreamPayment; last: boolean }) {
   return (
     <div
@@ -101,8 +100,6 @@ function PaymentMiniRow({ p, last }: { p: StreamPayment; last: boolean }) {
     </div>
   );
 }
-
-// ── sheet ─────────────────────────────────────────────────────────────────────
 
 export function TerminalSheet({
   terminal,

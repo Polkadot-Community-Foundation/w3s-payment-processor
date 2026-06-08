@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { fromBufferToBase58, getSs58AddressInfo } from "@polkadot-api/substrate-bindings";
 import { bytesToHex, hexToBytes } from "@noble/hashes/utils.js";
 
@@ -32,7 +35,6 @@ export function payoutToAccountId32(value: string): Uint8Array {
   );
 }
 
-/** Encode a 32-byte AccountId32 as an SS58 string (substrate prefix). */
 export function accountId32ToSs58(publicKey: Uint8Array, prefix = SS58_PREFIX_SUBSTRATE): string {
   if (publicKey.length !== 32) {
     throw new InvalidAddressError(`AccountId32 must be 32 bytes; got ${publicKey.length}`);
@@ -40,7 +42,6 @@ export function accountId32ToSs58(publicKey: Uint8Array, prefix = SS58_PREFIX_SU
   return fromBufferToBase58(prefix)(publicKey);
 }
 
-/** 0x-prefixed lowercase hex of a 32-byte AccountId32 — stable map/storage key. */
 export function accountId32Hex(publicKey: Uint8Array): AccountId32Hex {
   if (publicKey.length !== 32) {
     throw new InvalidAddressError(`AccountId32 must be 32 bytes; got ${publicKey.length}`);
@@ -58,7 +59,6 @@ export function normalizeH160(value: string): H160Hex {
   return trimmed.toLowerCase() as H160Hex;
 }
 
-/** Byte-equality for two AccountId32 public keys. */
 export function sameAccountId(a: Uint8Array, b: Uint8Array): boolean {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i++) {

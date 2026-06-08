@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Console output capture — monkey-patches `console.log/info/warn/error`
  * and the `window.onerror` / `unhandledrejection` hooks so the debug

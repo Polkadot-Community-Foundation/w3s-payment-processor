@@ -1,8 +1,6 @@
-/**
- * Plain-language state screens — the spec's biggest UX win: the machine states
- * become calm sentences with a clear "what do I do?". `config` accepts the real
- * error string in the collapsible technical-details block.
- */
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 import { useState, type ReactNode } from "react";
 
 import { DisplayIf } from "@/shared/components/DisplayIf.tsx";
@@ -124,7 +122,6 @@ export function StateScreen({ kind, detail, children }: { kind: StateKind; detai
   );
 }
 
-/** Full-viewport centered variant for app-level states (config error, inert). */
 export function FullState({ kind, detail }: { kind: StateKind; detail?: string }) {
   return (
     <div className="pay-root" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>

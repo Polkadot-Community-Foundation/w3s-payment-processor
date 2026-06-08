@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Lucide icon paths (24×24 stroke) rendered through one <Icon>. The path data
  * is the system's icon library, inlined so the bundle pulls no icon dependency.

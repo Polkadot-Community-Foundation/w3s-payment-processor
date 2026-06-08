@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * v1 terminal resolution. Local mode synthesizes terminals from config; remote
  * mode reads the on-chain `W3SPayMerchantRegistry` and filters by `groupId`

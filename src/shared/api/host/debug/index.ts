@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * `@/sdk/host/debug` — host-debug overlay for products that run
  * inside a Polkadot host.

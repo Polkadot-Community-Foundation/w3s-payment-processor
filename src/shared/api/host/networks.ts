@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// @paritytech
+
 /**
  * Network registry. Source of truth for per-network chain endpoints. The
  * active network is chosen at deploy time via `VITE_NETWORK`; `resolveNetwork`
