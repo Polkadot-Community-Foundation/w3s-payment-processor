@@ -3,14 +3,14 @@
 Builds the SPA and publishes it as a `.dot` product via `bulletin-deploy`.
 
 > [!IMPORTANT]
-> **Deploy [w3spay-admin](../w3spay-admin/) first.** This app is a downstream
+> **Deploy [w3spay-admin](https://github.com/paritytech/w3spay-admin/) first.** This app is a downstream
 > consumer of w3spay-admin's `W3SPayRegistry`: at unlock it fetches the encrypted
 > per-merchant config by `groupId` from that registry. w3spay-admin is what
 > deploys the registry and what publishes the encrypted config (recording its CID
 > on the registry). Until admin has run for your group, this app has no config to
 > unlock and the monitors never mount. For a fresh fork, take the `W3SPayRegistry`
 > address admin prints and set it as `VITE_W3SPAY_REGISTRY_ADDRESS` (a shared
-> default lives in `src/config.ts`). See [w3spay-admin/DEPLOY.md](../w3spay-admin/DEPLOY.md).
+> default lives in `src/config.ts`). See [w3spay-admin/DEPLOY.md](https://github.com/paritytech/w3spay-admin/blob/main/DEPLOY.md).
 
 ## Guided deploy (`npm run setup`)
 

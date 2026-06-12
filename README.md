@@ -12,7 +12,7 @@ Per-merchant, always-on dashboard for the W3sPay payment surface. The app unlock
 ### Deploy
 
 > [!IMPORTANT]
-> **Deploy [w3spay-admin](../w3spay-admin/) first** — it owns the `W3SPayRegistry`
+> **Deploy [w3spay-admin](https://github.com/paritytech/w3spay-admin/) first** — it owns the `W3SPayRegistry`
 > this app reads and publishes the encrypted per-merchant config fetched at unlock.
 > Without an admin-published config for your group, the unlock gate has nothing to
 > resolve. See [DEPLOY.md](./DEPLOY.md).
@@ -22,8 +22,6 @@ npm install
 cp .env.example .env.local        # set secrets, or let the wizard prompt
 npm run setup                     # guided deploy: configure → readiness → publish
 ```
-
-See **[DEPLOY.md](./DEPLOY.md)** for the full guide: the `npm run setup` wizard, the `.env.local` variable table, flags (`--yes`, `--dry-run`, `--publish`, …), and the manual `npm run deploy` path.
 
 ### Per-merchant config
 
