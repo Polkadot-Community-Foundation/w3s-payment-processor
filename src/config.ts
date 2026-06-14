@@ -77,13 +77,20 @@ function readEnv() {
       openByDefault: readBool("VITE_DEBUG_PANEL_OPEN", false),
     },
     remoteCredentials: {
-      ipfsGateway: readString(
-        "VITE_BULLETIN_IPFS_GATEWAY",
-        "https://paseo-bulletin-next-ipfs.polkadot.io",
-      ),
+      // Default follows the active network (networks.ts); the env var still
+      // overrides per-deploy. Summit resolves to https://summit-ipfs.polkadot.io.
+      ipfsGateway: readString("VITE_BULLETIN_IPFS_GATEWAY", network.ipfsGateway),
+      // Network-specific default (`readString` collapses an empty env var to
+      // the fallback, so each network needs its own correct default — a paseo
+      // address on Summit AH points at a non-existent contract).
+      //   summit: w3spay-admin's live Summit W3SPayRegistry (owner 5Hn6AMFk…);
+      //           see summit-net-deployments register.
+      //   else:   paseo dev-convenience default.
       registryAddress: readString(
         "VITE_W3SPAY_REGISTRY_ADDRESS",
-        "0xff3b3e8cc1c6bc8a67ae933dc238595c2cc6402b",
+        network.key === "summit"
+          ? "0xf76dadbbc112738275ed398d15c0e8c47b2550f2"
+          : "0xff3b3e8cc1c6bc8a67ae933dc238595c2cc6402b",
       ),
     },
     telemetry: {

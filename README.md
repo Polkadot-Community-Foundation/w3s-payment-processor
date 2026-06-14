@@ -55,7 +55,7 @@ npm run build
 
 There are two supported paths:
 
-- **One-off deploy** — set `VITE_NETWORK` and `BULLETIN_ENV` to an existing supported key (`paseo-next-v2`, `paseo`, or `previewnet`) before running `npm run deploy`.
+- **One-off deploy** — set `VITE_NETWORK` and `BULLETIN_ENV` to an existing supported key (`summit`, `paseo-next-v2`, `paseo`, or `previewnet`) before running `npm run deploy`. `summit` is the production target.
 - **Permanent built-in network** — commit a new network entry so the app and deployment script agree on the same chain.
 
 For a permanent network:
@@ -64,7 +64,7 @@ For a permanent network:
 2. Add the same key to the supported-network check in `deploy.sh`.
 3. Confirm the network has the main-chain and People-chain endpoints required by the enabled v1 / v2 flows.
 4. Add `.env.<network>.example` templates if contributors need a starting point.
-5. Confirm `bulletin-deploy` supports the same `BULLETIN_ENV` value before publishing.
+5. Confirm `polkadot-app-deploy` supports the same `BULLETIN_ENV` value before publishing (it ships `paseo-next-v2` + `summit` built in).
 
 ## Security
 
