@@ -10,7 +10,7 @@
  * or admin-grant phase here.
  *
  *   npm run setup                                  # interactive
- *   npm run setup -- --network paseo-next-v2 --yes # non-interactive
+ *   npm run setup -- --network summit --yes        # non-interactive
  *   npm run setup -- --dry-run                     # checks only, writes nothing
  */
 
@@ -26,9 +26,9 @@ import * as ui from "./lib/ui";
 const REPO_ROOT = resolve(fileURLToPath(import.meta.url), "..", "..");
 const ENV_LOCAL = resolve(REPO_ROOT, ".env.local");
 const ENV_FILE = resolve(REPO_ROOT, ".env");
-const MIN_BULLETIN_DEPLOY = "0.10.0";
+const MIN_PAD_VERSION = "0.10.1";
 const RPC_TIMEOUT_MS = 10_000;
-const DEFAULT_NETWORK_KEY = "paseo-next-v2";
+const DEFAULT_NETWORK_KEY = "summit";
 
 export interface SetupFlags {
   network?: string;
@@ -148,7 +148,6 @@ function probeWsReachable(wsUrl: string, timeoutMs: number): Promise<void> {
 function phaseEnvironment(): void {
   ui.heading("Environment");
   const blockers: string[] = [];
-  const bulletinFix = "npm install -g bulletin-deploy@latest";
 
   const nodeMajor = Number(process.versions.node.split(".")[0]);
   if (nodeMajor >= 22) ui.success(`Node ${process.versions.node}`);
@@ -157,16 +156,15 @@ function phaseEnvironment(): void {
     blockers.push("Upgrade Node to >= 22.");
   }
 
-  const probe = spawnSync("bulletin-deploy", ["--version"], { encoding: "utf8", stdio: "pipe" });
+  // The deploy CLI is optional locally: deploy.sh falls back to
+  // `npx -y @polkadot-community-foundation/polkadot-app-deploy@<pin>` when it
+  // isn't on PATH, so a missing/old global is a warning, not a blocker.
+  const probe = spawnSync("polkadot-app-deploy", ["--version"], { encoding: "utf8", stdio: "pipe" });
   const found = (probe.stdout ?? "").match(/([0-9]+)\.([0-9]+)\.([0-9]+)/)?.[0];
-  if (probe.error || probe.status !== 0 || !found) {
-    ui.error("bulletin-deploy not found on PATH");
-    blockers.push(bulletinFix);
-  } else if (versionGte(found, MIN_BULLETIN_DEPLOY)) {
-    ui.success(`bulletin-deploy ${found}`);
+  if (!probe.error && probe.status === 0 && found && versionGte(found, MIN_PAD_VERSION)) {
+    ui.success(`polkadot-app-deploy ${found}`);
   } else {
-    ui.error(`bulletin-deploy ${found} < ${MIN_BULLETIN_DEPLOY}`);
-    blockers.push(bulletinFix);
+    ui.warn(`polkadot-app-deploy >= ${MIN_PAD_VERSION} not on PATH — deploy.sh will fetch it via npx.`);
   }
 
   if (blockers.length) {
@@ -257,13 +255,22 @@ async function phaseConfigure(flags: SetupFlags): Promise<Config> {
   }
   if (publishMnemonic) validateMnemonic(publishMnemonic, "Publisher mnemonic");
 
-  const publishDefault = flags.publish ?? parsePublishFlag(process.env.BULLETIN_DEPLOY_PUBLISH);
-  let publishToBrowse = publishDefault;
-  if (flags.publish === undefined && !flags.yes && !flags.dryRun) {
-    publishToBrowse = await ui.confirm(
-      "Publish to the Browse directory? (lists the .dot in the on-chain Publisher registry; paseo-next-v2 only)",
-      publishDefault,
-    );
+  // The Publisher (Browse directory) registry only exists on paseo-next-v2.
+  // Summit has no Publisher, so --publish is a non-op there — force it off and
+  // skip the prompt rather than offer a choice that does nothing.
+  let publishToBrowse: boolean;
+  if (networkKey === "summit") {
+    publishToBrowse = false;
+    if (flags.publish) ui.warn("--publish ignored on summit (no Publisher registry).");
+  } else {
+    const publishDefault = flags.publish ?? parsePublishFlag(process.env.BULLETIN_DEPLOY_PUBLISH);
+    publishToBrowse = publishDefault;
+    if (flags.publish === undefined && !flags.yes && !flags.dryRun) {
+      publishToBrowse = await ui.confirm(
+        "Publish to the Browse directory? (lists the .dot in the on-chain Publisher registry; paseo-next-v2 only)",
+        publishDefault,
+      );
+    }
   }
 
   let persistSecrets = false;

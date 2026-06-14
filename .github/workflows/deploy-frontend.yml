@@ -1,8 +1,16 @@
 name: Deploy Frontend
 
 # Single-job build + deploy through this project's deploy.sh wrapper.
-# Production uses a fixed DotNS domain so installed hosts and shared links stay
-# stable across releases; PR previews get a pr<N>- prefix on the same base.
+#
+# Production (push to main / manual dispatch) deploys to the Summit network at a
+# fixed DotNS domain so installed hosts and shared links stay stable across
+# releases. PR previews stay on the paseo-next-v2 testnet (a Summit preview
+# would be a fresh DotNS registration ~2 SUM + a 14-day Bulletin upload each
+# time) and get a pr<N>- prefix on the same base name.
+#
+# Deploy CLI: @polkadot-community-foundation/polkadot-app-deploy@0.10.1 — it
+# ships the built-in `summit` env. deploy.sh passes --mnemonic (direct signer),
+# --config, --js-merkle and --no-transfer-to-signedin-user.
 
 on:
   push:
@@ -43,17 +51,26 @@ jobs:
           rm -f package-lock.json
           npm install --no-audit --no-fund
 
-      - name: Setup IPFS
-        uses: ipfs/download-ipfs-distribution-action@v1
-        with:
-          name: kubo
-          version: v0.33.0
-
-      - name: Initialize IPFS repo
-        run: ipfs init
-
       - name: Install deploy tool
-        run: npm install -g bulletin-deploy@latest
+        run: npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.10.1
+
+      - name: Resolve deploy target
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "domain=pr${{ github.event.pull_request.number }}-w3spayprocessor.dot" >> "$GITHUB_OUTPUT"
+            echo "env=paseo-next-v2" >> "$GITHUB_OUTPUT"
+            echo "registry=${{ vars.VITE_W3SPAY_REGISTRY_ADDRESS_PASEO || '0x70f6a449d770931419cfa8d8412e3a5d6377e905' }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "domain=w3spayprocessor.dot" >> "$GITHUB_OUTPUT"
+            echo "env=summit" >> "$GITHUB_OUTPUT"
+            # Summit W3SPayRegistry (deployed by w3spay-admin, owner 5Hn6AMFk…;
+            # see summit-net-deployments register). The repo variable
+            # VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT overrides it (e.g. a redeploy);
+            # the literal below is the live default so the build is correct even
+            # if the var is unset.
+            echo "registry=${{ vars.VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT || '0xf76dadbbc112738275ed398d15c0e8c47b2550f2' }}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Deploy processor app
         uses: nick-fields/retry@v3
@@ -61,17 +78,15 @@ jobs:
           timeout_minutes: 15
           max_attempts: 3
           retry_wait_seconds: 30
-          command: |
-            if [ "${{ github.event_name }}" = "pull_request" ]; then
-              DOMAIN="pr${{ github.event.pull_request.number }}-w3spayprocessor01.dot"
-            else
-              DOMAIN="w3spayprocessor01.dot"
-            fi
-            ./deploy.sh "$DOMAIN"
+          command: ./deploy.sh "${{ steps.target.outputs.domain }}"
         env:
+          # On Summit this MUST be the Bulletin-authorized uploader (e.g. 5Fk8…)
+          # that owns w3spayprocessor.dot — it signs both the Bulletin upload
+          # and the DotNS bind. On paseo previews it just needs paseo funds.
           MNEMONIC: ${{ secrets.DOTNS_MNEMONIC }}
-          VITE_NETWORK: ${{ vars.VITE_NETWORK || 'paseo-next-v2' }}
-          VITE_W3SPAY_REGISTRY_ADDRESS: ${{ vars.VITE_W3SPAY_REGISTRY_ADDRESS || '0x70f6a449d770931419cfa8d8412e3a5d6377e905' }}
+          BULLETIN_ENV: ${{ steps.target.outputs.env }}
+          VITE_NETWORK: ${{ steps.target.outputs.env }}
+          VITE_W3SPAY_REGISTRY_ADDRESS: ${{ steps.target.outputs.registry }}
           NODE_OPTIONS: '--max-old-space-size=8192'
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_SENTRY_ENV: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
@@ -81,11 +96,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const domain = `pr${{ github.event.pull_request.number }}-w3spayprocessor01`;
+            const domain = `pr${{ github.event.pull_request.number }}-w3spayprocessor`;
             const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `**${domain}.dot** · [logs](${runUrl})\n\nhttps://${domain}.dot.li`
+              body: `**${domain}.dot** (paseo-next-v2 preview) · [logs](${runUrl})\n\nhttps://${domain}.dot.li`
             });
