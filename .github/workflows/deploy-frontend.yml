@@ -8,7 +8,7 @@ name: Deploy Frontend
 # would be a fresh DotNS registration ~2 SUM + a 14-day Bulletin upload each
 # time) and get a pr<N>- prefix on the same base name.
 #
-# Deploy CLI: @polkadot-community-foundation/polkadot-app-deploy@0.10.1 — it
+# Deploy CLI: @polkadot-community-foundation/polkadot-app-deploy@0.11.0 — it
 # ships the built-in `summit` env. deploy.sh passes --mnemonic (direct signer),
 # --config, --js-merkle and --no-transfer-to-signedin-user.
 
@@ -52,7 +52,7 @@ jobs:
           npm install --no-audit --no-fund
 
       - name: Install deploy tool
-        run: npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.10.1
+        run: npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.11.0
 
       - name: Resolve deploy target
         id: target
