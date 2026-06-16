@@ -48,7 +48,7 @@ npm run setup -- --network summit --domain yourproduct.dot --yes
 
 - Node ≥ 22
 - `polkadot-app-deploy` ≥ 0.10.1 — installed globally in CI, or fetched via
-  `npx` by `deploy.sh` when absent (`@polkadot-community-foundation/polkadot-app-deploy@0.10.1`)
+  `npx` by `deploy.sh` when absent (`@polkadot-community-foundation/polkadot-app-deploy@0.11.0`)
 - **w3spay-admin deployed first** (see the note above) — its `W3SPayRegistry` and a
   published per-merchant config for your group must exist before this app can unlock.
 
