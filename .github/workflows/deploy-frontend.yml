@@ -2,11 +2,11 @@ name: Deploy Frontend
 
 # Single-job build + deploy through this project's deploy.sh wrapper.
 #
-# Production (push to main / manual dispatch) deploys to the Summit network at a
-# fixed DotNS domain so installed hosts and shared links stay stable across
-# releases. PR previews stay on the paseo-next-v2 testnet (a Summit preview
-# would be a fresh DotNS registration ~2 SUM + a 14-day Bulletin upload each
-# time) and get a pr<N>- prefix on the same base name.
+# All deploys target the Summit network — PCF CI never targets Paseo.
+# Production (push to main / manual dispatch) uses a fixed DotNS domain so
+# installed hosts and shared links stay stable across releases. PR previews
+# also deploy to Summit (each a fresh DotNS registration + Bulletin upload)
+# and get a pr<N>- prefix on the same base name.
 #
 # Deploy CLI: @polkadot-community-foundation/polkadot-app-deploy@0.11.0 — it
 # ships the built-in `summit` env. deploy.sh passes --mnemonic (direct signer),
@@ -57,20 +57,20 @@ jobs:
       - name: Resolve deploy target
         id: target
         run: |
+          # Summit-only: every branch (PR previews included) deploys to Summit.
+          # No path may set paseo-next-v2 — PCF CI never targets Paseo.
+          # Summit W3SPayRegistry (deployed by w3spay-admin, owner 5Hn6AMFk…;
+          # see summit-net-deployments register). The repo variable
+          # VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT overrides it (e.g. a redeploy);
+          # the literal below is the live default so the build is correct even
+          # if the var is unset.
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "domain=pr${{ github.event.pull_request.number }}-w3spayprocessor.dot" >> "$GITHUB_OUTPUT"
-            echo "env=paseo-next-v2" >> "$GITHUB_OUTPUT"
-            echo "registry=${{ vars.VITE_W3SPAY_REGISTRY_ADDRESS_PASEO || '0x70f6a449d770931419cfa8d8412e3a5d6377e905' }}" >> "$GITHUB_OUTPUT"
           else
             echo "domain=w3spayprocessor.dot" >> "$GITHUB_OUTPUT"
-            echo "env=summit" >> "$GITHUB_OUTPUT"
-            # Summit W3SPayRegistry (deployed by w3spay-admin, owner 5Hn6AMFk…;
-            # see summit-net-deployments register). The repo variable
-            # VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT overrides it (e.g. a redeploy);
-            # the literal below is the live default so the build is correct even
-            # if the var is unset.
-            echo "registry=${{ vars.VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT || '0xf76dadbbc112738275ed398d15c0e8c47b2550f2' }}" >> "$GITHUB_OUTPUT"
           fi
+          echo "env=summit" >> "$GITHUB_OUTPUT"
+          echo "registry=${{ vars.VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT || '0xf76dadbbc112738275ed398d15c0e8c47b2550f2' }}" >> "$GITHUB_OUTPUT"
 
       - name: Deploy processor app
         uses: nick-fields/retry@v3
@@ -82,7 +82,8 @@ jobs:
         env:
           # On Summit this MUST be the Bulletin-authorized uploader (e.g. 5Fk8…)
           # that owns w3spayprocessor.dot — it signs both the Bulletin upload
-          # and the DotNS bind. On paseo previews it just needs paseo funds.
+          # and the DotNS bind. PR previews deploy to Summit too, so the same
+          # authorized uploader is required for the pr<N>- prefixed names.
           MNEMONIC: ${{ secrets.DOTNS_MNEMONIC }}
           BULLETIN_ENV: ${{ steps.target.outputs.env }}
           VITE_NETWORK: ${{ steps.target.outputs.env }}
@@ -90,6 +91,7 @@ jobs:
           NODE_OPTIONS: '--max-old-space-size=8192'
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_SENTRY_ENV: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+
 
       - name: Comment on PR
         if: github.event.pull_request
@@ -102,5 +104,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `**${domain}.dot** (paseo-next-v2 preview) · [logs](${runUrl})\n\nhttps://${domain}.dot.li`
+              body: `**${domain}.dot** (Summit preview) · [logs](${runUrl})\n\nhttps://${domain}.dot.li`
             });
