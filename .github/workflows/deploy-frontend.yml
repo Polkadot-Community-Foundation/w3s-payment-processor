@@ -91,10 +91,11 @@ jobs:
           # and the DotNS bind. PR previews deploy to Summit too, so the same
           # authorized uploader is required for the pr<N>- prefixed names.
           MNEMONIC: ${{ secrets.DOTNS_MNEMONIC }}
-          # Publish to the on-chain Publisher (browse directory) ONLY for the
-          # production deploy of w3spayprocessor.dot. PR previews (pr<N>- names)
-          # must stay unlisted, so publish is gated to non-pull_request events.
-          BULLETIN_DEPLOY_PUBLISH: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
+          # w3spayprocessor.dot must NOT be publicized in the browse directory
+          # (operator decision). Publishing is disabled on every event; the .dot
+          # content still deploys, it just isn't listed via Publisher.publish.
+          # (Use the unpublish.yml workflow to remove an existing listing.)
+          BULLETIN_DEPLOY_PUBLISH: 'false'
           BULLETIN_ENV: ${{ steps.target.outputs.env }}
           VITE_NETWORK: ${{ steps.target.outputs.env }}
           VITE_W3SPAY_REGISTRY_ADDRESS: ${{ steps.target.outputs.registry }}
