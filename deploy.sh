@@ -34,7 +34,9 @@
 #                               MUST match it.
 #   - BULLETIN_DEPLOY_PUBLISH   Set to `true` to pass --publish to polkadot-app-deploy,
 #                               listing the .dot in the on-chain Publisher registry
-#                               (paseo-next-v2 only). Default: false (upload only).
+#                               (the browse directory). Requires the deploy CLI
+#                               at >=0.11.1, which wires the Summit Publisher
+#                               address. Default: false (upload only).
 #
 set -euo pipefail
 
@@ -74,8 +76,9 @@ BUILD_DIR="$SCRIPT_DIR/dist"
 GATEWAY_BASE="${DOTNS_GATEWAY_BASE:-dot.li}"
 BULLETIN_ENV="${BULLETIN_ENV:-summit}"
 BULLETIN_DEPLOY_PUBLISH="${BULLETIN_DEPLOY_PUBLISH:-false}"
-# Pinned version of the PCF deploy CLI used for the npx fallback.
-PAD_VERSION="0.10.1"
+# Pinned version of the PCF deploy CLI used for the npx fallback. >=0.11.1 is
+# required for --publish on summit (it wires the Summit Publisher address).
+PAD_VERSION="0.11.1"
 _arg_domain="${1:-}"
 # Prefer VITE_-prefixed name (shared with src/config.ts); fall back to legacy.
 # This is the SINGLE source of truth: the resolved value is exported as
@@ -245,16 +248,14 @@ if [[ ! -f "$BUILD_DIR/manifest.toml" ]]; then
   echo "Error: manifest.toml was not copied into the build output."
   exit 1
 fi
-# Resolve the --publish flag. The Publisher (Browse directory) registry only
-# exists on paseo-next-v2 — Summit has no Publisher, so --publish is a non-op
-# there (a non-fatal skip). Never pass it on summit.
+# Resolve the --publish flag. --publish lists the .dot in the on-chain Publisher
+# registry (the browse directory). Summit's Publisher is wired into the deploy
+# CLI from >=0.11.1, so --publish works on summit there. The deploying signer
+# (DotNS owner) is the Publisher owner, so it publishes with no personhood gate
+# and no rate limit for any .dot it owns.
 PUBLISH_FLAG=()
 if [[ "$BULLETIN_DEPLOY_PUBLISH" == "true" ]]; then
-  if [[ "$BULLETIN_ENV" == "summit" ]]; then
-    echo "==> Note: --publish requested but ignored on summit (no Publisher registry)."
-  else
-    PUBLISH_FLAG=(--publish)
-  fi
+  PUBLISH_FLAG=(--publish)
 fi
 
 echo ""
