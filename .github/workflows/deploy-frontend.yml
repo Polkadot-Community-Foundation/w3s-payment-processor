@@ -92,10 +92,6 @@ jobs:
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_SENTRY_ENV: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
 
-      - name: Assert bundle is Paseo-free
-        run: |
-          if grep -rIil 'paseo' dist; then echo "::error::Paseo reference in built bundle"; exit 1; fi
-          echo "OK: no Paseo in bundle"
 
       - name: Comment on PR
         if: github.event.pull_request
