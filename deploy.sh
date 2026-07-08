@@ -194,7 +194,7 @@ fi
 export VITE_NETWORK="${VITE_NETWORK:-$BULLETIN_ENV}"
 
 case "$VITE_NETWORK" in
-  paseo|paseo-next-v2|previewnet|summit) ;;
+  paseo|paseo-next|paseo-next-v2|previewnet|summit) ;;
   *)
     echo "Error: VITE_NETWORK=\"$VITE_NETWORK\" is not supported."
     echo "Expected one of: paseo, paseo-next-v2, previewnet, summit."
