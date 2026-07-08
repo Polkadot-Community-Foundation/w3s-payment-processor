@@ -14,7 +14,7 @@
  * Trimmed from `apps/w3spay-admin/src/shared/api/host/networks.ts`; genesis
  * hashes mirror that registry (verified live against the running chains).
  */
-export type NetworkKey = "paseo" | "paseo-next-v2" | "previewnet" | "summit";
+export type NetworkKey = "paseo" | "paseo-next-v2" | "paseo-next" | "previewnet" | "summit";
 
 export const SUPPORTED_NETWORKS: NetworkKey[] = ["paseo", "paseo-next-v2", "previewnet", "summit"];
 
@@ -22,7 +22,7 @@ export const SUPPORTED_NETWORKS: NetworkKey[] = ["paseo", "paseo-next-v2", "prev
  * Summit is the production network — default there so a bare build (no
  * VITE_NETWORK) targets production. Override via VITE_NETWORK for paseo dev.
  */
-export const DEFAULT_NETWORK: NetworkKey = "paseo-next-v2";
+export const DEFAULT_NETWORK: NetworkKey = "paseo-next";
 
 export interface ChainEndpoint {
   /** WebSocket RPC URL for direct (standalone) connection. */
@@ -63,6 +63,21 @@ export const NETWORKS: Record<NetworkKey, NetworkConfig> = {
   "paseo-next-v2": {
     key: "paseo-next-v2",
     displayName: "Paseo Next V2",
+    isTestnet: true,
+    mainChain: {
+      wsUrl: "wss://paseo-asset-hub-next-rpc.polkadot.io",
+      genesisHash: "0xbf0488dbe9daa1de1c08c5f743e26fdc2a4ecd74cf87dd1b4b1eeb99ae4ef19f",
+    },
+    peopleChain: {
+      wsUrl: "wss://paseo-people-next-system-rpc.polkadot.io",
+      genesisHash: "0xc5af1826b31493f08b7e2a823842f98575b806a784126f28da9608c68665afa5",
+    },
+    ipfsGateway: "https://paseo-bulletin-next-ipfs.polkadot.io",
+  },
+  // PCF-owned suite on the same chains — resolves PCF contracts.
+  "paseo-next": {
+    key: "paseo-next",
+    displayName: "Paseo Next (PCF)",
     isTestnet: true,
     mainChain: {
       wsUrl: "wss://paseo-asset-hub-next-rpc.polkadot.io",
