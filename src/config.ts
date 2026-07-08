@@ -88,8 +88,8 @@ function readEnv() {
       //   else:   paseo dev-convenience default.
       registryAddress: readString(
         "VITE_W3SPAY_REGISTRY_ADDRESS",
-        network.key === "summit"
-          ? "0xf76dadbbc112738275ed398d15c0e8c47b2550f2"
+        network.key === "paseo-next-v2"
+          ? "0x13a885e6c402cc293ae7185dcacbd824d109aee6" // PCF W3SPayRegistry on AH-next 1500 (owner 5Fk8)
           : "0xff3b3e8cc1c6bc8a67ae933dc238595c2cc6402b",
       ),
     },

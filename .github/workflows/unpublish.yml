@@ -44,4 +44,4 @@ jobs:
         run: |
           set -euo pipefail
           [ -n "$MNEMONIC" ] || { echo "::error::secrets.DOTNS_MNEMONIC (the 5Fk8 deployer mnemonic) is not set"; exit 1; }
-          polkadot-app-deploy --unpublish "${{ inputs.domain }}" --env summit --mnemonic "$MNEMONIC"
+          polkadot-app-deploy --unpublish "${{ inputs.domain }}" --env paseo-next --mnemonic "$MNEMONIC"
