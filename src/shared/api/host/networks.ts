@@ -22,7 +22,7 @@ export const SUPPORTED_NETWORKS: NetworkKey[] = ["paseo", "paseo-next-v2", "prev
  * Summit is the production network — default there so a bare build (no
  * VITE_NETWORK) targets production. Override via VITE_NETWORK for paseo dev.
  */
-export const DEFAULT_NETWORK: NetworkKey = "summit";
+export const DEFAULT_NETWORK: NetworkKey = "paseo-next-v2";
 
 export interface ChainEndpoint {
   /** WebSocket RPC URL for direct (standalone) connection. */
