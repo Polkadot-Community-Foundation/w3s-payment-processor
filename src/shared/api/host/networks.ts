@@ -16,7 +16,7 @@
  */
 export type NetworkKey = "paseo" | "paseo-next-v2" | "paseo-next" | "previewnet" | "summit";
 
-export const SUPPORTED_NETWORKS: NetworkKey[] = ["paseo", "paseo-next-v2", "previewnet", "summit"];
+export const SUPPORTED_NETWORKS: NetworkKey[] = ["paseo", "paseo-next-v2", "paseo-next", "previewnet", "summit"];
 
 /**
  * Summit is the production network — default there so a bare build (no
