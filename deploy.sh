@@ -74,7 +74,7 @@ _load_env "$SCRIPT_DIR/.env" 0
 _load_env "$SCRIPT_DIR/.env.local" 1
 BUILD_DIR="$SCRIPT_DIR/dist"
 GATEWAY_BASE="${DOTNS_GATEWAY_BASE:-dot.li}"
-BULLETIN_ENV="${BULLETIN_ENV:-summit}"
+BULLETIN_ENV="${BULLETIN_ENV:-devnet}"
 BULLETIN_DEPLOY_PUBLISH="${BULLETIN_DEPLOY_PUBLISH:-false}"
 # Pinned version of the PCF deploy CLI used for the npx fallback. >=0.11.1 is
 # required for --publish on summit (it wires the Summit Publisher address).
@@ -194,10 +194,10 @@ fi
 export VITE_NETWORK="${VITE_NETWORK:-$BULLETIN_ENV}"
 
 case "$VITE_NETWORK" in
-  paseo|paseo-next|paseo-next-v2|previewnet|summit) ;;
+  paseo|paseo-next|paseo-next-v2|previewnet|summit|devnet) ;;
   *)
     echo "Error: VITE_NETWORK=\"$VITE_NETWORK\" is not supported."
-    echo "Expected one of: paseo, paseo-next-v2, previewnet, summit."
+    echo "Expected one of: paseo, paseo-next, paseo-next-v2, previewnet, summit, devnet."
     exit 1
     ;;
 esac

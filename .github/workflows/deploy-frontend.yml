@@ -63,20 +63,19 @@ jobs:
       - name: Resolve deploy target
         id: target
         run: |
-          # Summit-only: every branch (PR previews included) deploys to Summit.
-          # No path may set paseo-next-v2 — PCF CI never targets Paseo.
-          # Summit W3SPayRegistry (deployed by w3spay-admin, owner 5Hn6AMFk…;
-          # see summit-net-deployments register). The repo variable
-          # VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT overrides it (e.g. a redeploy);
-          # the literal below is the live default so the build is correct even
-          # if the var is unset.
+          # Devnet-only: every branch (PR previews included) deploys to the
+          # public products devnet (Paseo AH 1000/People 1004/Bulletin 1010).
+          # Devnet W3SPayRegistry (deployed by w3spay-admin, live on AH 1000).
+          # The repo variable VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT overrides it
+          # (e.g. a redeploy); the literal below is the live default so the
+          # build is correct even if the var is unset.
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "domain=pr${{ github.event.pull_request.number }}-w3spayprocessor.dot" >> "$GITHUB_OUTPUT"
           else
             echo "domain=w3spayprocessor.dot" >> "$GITHUB_OUTPUT"
           fi
-          echo "env=paseo-next" >> "$GITHUB_OUTPUT"
-          echo "registry=${{ vars.VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT || '0xf76dadbbc112738275ed398d15c0e8c47b2550f2' }}" >> "$GITHUB_OUTPUT"
+          echo "env=devnet" >> "$GITHUB_OUTPUT"
+          echo "registry=${{ vars.VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT || '0x950c0243cb112abe1112924f1fcab04fb03ae670' }}" >> "$GITHUB_OUTPUT"
 
       - name: Deploy processor app
         uses: nick-fields/retry@v3
