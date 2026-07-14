@@ -75,7 +75,7 @@ jobs:
           else
             echo "domain=w3spayprocessor.dot" >> "$GITHUB_OUTPUT"
           fi
-          echo "env=paseo-next" >> "$GITHUB_OUTPUT"
+          echo "env=devnet" >> "$GITHUB_OUTPUT"
           echo "registry=${{ vars.VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT || '0xf76dadbbc112738275ed398d15c0e8c47b2550f2' }}" >> "$GITHUB_OUTPUT"
 
       - name: Deploy processor app
