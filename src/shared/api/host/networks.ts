@@ -22,7 +22,7 @@ export const SUPPORTED_NETWORKS: NetworkKey[] = ["paseo", "paseo-next-v2", "pase
  * Summit is the production network — default there so a bare build (no
  * VITE_NETWORK) targets production. Override via VITE_NETWORK for paseo dev.
  */
-export const DEFAULT_NETWORK: NetworkKey = "paseo-next";
+export const DEFAULT_NETWORK: NetworkKey = "devnet";
 
 export interface ChainEndpoint {
   /** WebSocket RPC URL for direct (standalone) connection. */
@@ -137,6 +137,26 @@ export const NETWORKS: Record<NetworkKey, NetworkConfig> = {
       genesisHash: "0xbe5238f82c3553bc57ac3be43bef110bd58c49ad0744110814985195ca7d8c4e",
     },
     ipfsGateway: "https://summit-ipfs.polkadot.io",
+  },
+  // PCF devnet — public Paseo AH 1000 / People 1004 / Bulletin 1010. Endpoints
+  // mirror polkadot-app-deploy's built-in `devnet` env; genesis hashes come
+  // from the product-sdk devnet descriptors (chain_getBlockHash(0)).
+  devnet: {
+    key: "devnet",
+    displayName: "Devnet (public Paseo)",
+    isTestnet: true,
+    mainChain: {
+      wsUrl: "wss://asset-hub-paseo-rpc.n.dwellir.com",
+      genesisHash: "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2",
+    },
+    peopleChain: {
+      wsUrl: "wss://people-paseo.rotko.net",
+      genesisHash: "0xe6c30d6e148f250b887105237bcaa5cb9f16dd203bf7b5b9d4f1da7387cb86ec",
+    },
+    // Devnet Bulletin HTTP IPFS gateway is still pending (see the DEVNET
+    // register). Left empty so the host transport / bitswap path resolves CIDs;
+    // supply VITE_BULLETIN_IPFS_GATEWAY once a public gateway lands.
+    ipfsGateway: "",
   },
 };
 

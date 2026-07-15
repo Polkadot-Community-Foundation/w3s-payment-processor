@@ -155,8 +155,8 @@ describe("requestChainRemotePermissions", () => {
     setChainTransport("rpc");
     await requestChainRemotePermissions();
     expect(requestRemoteOriginPermissionMock).toHaveBeenCalledExactlyOnceWith([
-      "summit-asset-hub-rpc.polkadot.io",
-      "summit-people-rpc.polkadot.io",
+      "asset-hub-paseo-rpc.n.dwellir.com",
+      "people-paseo.rotko.net",
     ]);
   });
 

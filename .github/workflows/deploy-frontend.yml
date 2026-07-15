@@ -8,7 +8,7 @@ name: Deploy Frontend
 # also deploy to Summit (each a fresh DotNS registration + Bulletin upload)
 # and get a pr<N>- prefix on the same base name.
 #
-# Deploy CLI: @polkadot-community-foundation/polkadot-app-deploy@0.12.0 — it
+# Deploy CLI: @polkadot-community-foundation/polkadot-app-deploy@0.12.1 — it
 # ships the built-in `summit` env (and, from 0.11.1, the Summit Publisher
 # address so --publish lists the app in the browse directory). deploy.sh passes
 # --mnemonic (direct signer), --config, --js-merkle and
@@ -58,25 +58,24 @@ jobs:
           npm install --no-audit --no-fund
 
       - name: Install deploy tool
-        run: npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.12.0
+        run: npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.12.1
 
       - name: Resolve deploy target
         id: target
         run: |
-          # Devnet: every branch (PR previews included) deploys to the public
-          # products devnet (standard Paseo AH 1000 / People 1004 / Bulletin 1010).
-          # Devnet W3SPayRegistry (deployed by w3spay-admin, owner 0x8C78; see
-          # summit-net-deployments/DEVNET register). The repo variable
-          # VITE_W3SPAY_REGISTRY_ADDRESS_DEVNET overrides it (e.g. a redeploy);
-          # the literal below is the live default so the build is correct even
-          # if the var is unset.
+          # Devnet-only: every branch (PR previews included) deploys to the
+          # public products devnet (Paseo AH 1000/People 1004/Bulletin 1010).
+          # Devnet W3SPayRegistry (deployed by w3spay-admin, live on AH 1000).
+          # The repo variable VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT overrides it
+          # (e.g. a redeploy); the literal below is the live default so the
+          # build is correct even if the var is unset.
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "domain=pr${{ github.event.pull_request.number }}-w3spayprocessor.dot" >> "$GITHUB_OUTPUT"
           else
             echo "domain=w3spayprocessor.dot" >> "$GITHUB_OUTPUT"
           fi
           echo "env=devnet" >> "$GITHUB_OUTPUT"
-          echo "registry=${{ vars.VITE_W3SPAY_REGISTRY_ADDRESS_DEVNET || '0x950c0243cb112abe1112924f1fcab04fb03ae670' }}" >> "$GITHUB_OUTPUT"
+          echo "registry=${{ vars.VITE_W3SPAY_REGISTRY_ADDRESS_SUMMIT || '0x950c0243cb112abe1112924f1fcab04fb03ae670' }}" >> "$GITHUB_OUTPUT"
 
       - name: Deploy processor app
         uses: nick-fields/retry@v3
@@ -115,5 +114,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: `**${domain}.dot** (Summit preview) · [logs](${runUrl})\n\nhttps://${domain}.dot.li`
+              body: `**${domain}.dot** (devnet preview) · [logs](${runUrl})\n\nhttps://${domain}.dot.li`
             });
