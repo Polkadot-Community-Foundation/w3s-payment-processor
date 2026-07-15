@@ -64,9 +64,9 @@ export const NETWORKS: Record<NetworkKey, NetworkConfig> = {
       wsUrl: "wss://people-paseo.rotko.net",
       genesisHash: "0xe6c30d6e148f250b887105237bcaa5cb9f16dd203bf7b5b9d4f1da7387cb86ec",
     },
-    // Devnet Bulletin HTTP IPFS gateway is still pending (see the DEVNET
-    // register); fall back to a public gateway until one lands.
-    ipfsGateway: "https://dweb.link",
+    // Devnet Bulletin HTTP IPFS gateway (bare origin; consumers append
+    // /ipfs/<cid>). Override per deploy via VITE_BULLETIN_IPFS_GATEWAY.
+    ipfsGateway: "https://devnet-ipfs.api.polkadotcommunity.foundation",
   },
   paseo: {
     key: "paseo",
