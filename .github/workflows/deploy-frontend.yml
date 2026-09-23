@@ -2,15 +2,14 @@ name: Deploy Frontend
 
 # Single-job build + deploy through this project's deploy.sh wrapper.
 #
-# All deploys target the Summit network — PCF CI never targets Paseo.
+# All deploys target devnet — PCF CI never targets Paseo Next.
 # Production (push to main / manual dispatch) uses a fixed DotNS domain so
 # installed hosts and shared links stay stable across releases. PR previews
-# also deploy to Summit (each a fresh DotNS registration + Bulletin upload)
+# also deploy to devnet (each a fresh DotNS registration + Bulletin upload)
 # and get a pr<N>- prefix on the same base name.
 #
-# Deploy CLI: @polkadot-community-foundation/polkadot-app-deploy@0.12.1 — it
-# ships the built-in `summit` env (and, from 0.11.1, the Summit Publisher
-# address so --publish lists the app in the browse directory). deploy.sh passes
+# Deploy CLI: @polkadot-community-foundation/polkadot-app-deploy@0.16.7 — it
+# ships the built-in `devnet` env (DotNS v0.8.0 addresses). deploy.sh passes
 # --mnemonic (direct signer), --config, --js-merkle and
 # --no-transfer-to-signedin-user.
 #
@@ -58,7 +57,7 @@ jobs:
           npm install --no-audit --no-fund
 
       - name: Install deploy tool
-        run: npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.12.1
+        run: npm install -g @polkadot-community-foundation/polkadot-app-deploy@0.16.7
 
       - name: Resolve deploy target
         id: target
@@ -85,9 +84,9 @@ jobs:
           retry_wait_seconds: 30
           command: ./deploy.sh "${{ steps.target.outputs.domain }}"
         env:
-          # On Summit this MUST be the Bulletin-authorized uploader (e.g. 5Fk8…)
+          # MUST be the Bulletin-authorized uploader (e.g. 5Fk8…)
           # that owns w3spayprocessor.dot — it signs both the Bulletin upload
-          # and the DotNS bind. PR previews deploy to Summit too, so the same
+          # and the DotNS bind. PR previews deploy to devnet too, so the same
           # authorized uploader is required for the pr<N>- prefixed names.
           MNEMONIC: ${{ secrets.DOTNS_MNEMONIC }}
           # w3spayprocessor.dot must NOT be publicized in the browse directory
